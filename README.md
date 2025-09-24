@@ -1,4 +1,4 @@
-# vpr-exporter
+# VPR exporter
 Developped by Arnaud Lemaignen
 
 VPR stands for Verical Pod Recommender.
