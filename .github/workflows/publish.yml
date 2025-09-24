@@ -3,8 +3,11 @@ name: publish
 on: [push]
 
 jobs:
-  publish-resource-model-exporter-image:
+  publish-vpr-exporter-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v2
