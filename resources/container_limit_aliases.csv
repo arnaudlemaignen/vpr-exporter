@@ -1,0 +1,4 @@
+pod_name,container_name,limit_alias,helm_value_filename,untouch_memory_limit,extra_memory_margin_per
+prometheus,prometheus,res.prometheus,,,
+grafana,grafana,res.grafana,grafana,true,30
+jvm-exporter,jvm-exporter,res.jvm_exporter,,,50
