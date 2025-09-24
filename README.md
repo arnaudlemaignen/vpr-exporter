@@ -17,20 +17,26 @@ For instance on the image below we can see that the memory requests and the aggr
 ![](usage_vs_req.png)
 
 In a nutshell if you have the right requests, Karpenter you will spin exactly the right computes at best cost for you.
-Well this is definitely a FinOps good practice !
+Well this is one of the key FinOps good practice which is called right-sizing.
 
-## What the app does ?
+## What does the app ?
 
 This app 
 1. Find all deployment/sts/daemonset/cron jobs
 2. Calculate CPU Request based on cpu usage and Mem Request/Limit based on usage (by default on the last 7 days) & JVM internals (mem after full gc and static mem on all GC collectors from java 8 to java 24)
 3. Write the results to a CSV (to open in a spreadsheet for analytics)/yaml (as an helm value file)
 4. Expose the results in a prometheus format
-5. A [dashboard](https://github.com/arnaudlemaignen/grafana-dashboards/tree/master/prometheus-ds/vpr) is also available to follow historical information (as in VPA).
+5. A [dashboard](https://github.com/arnaudlemaignen/grafana-dashboards/tree/master/prometheus-ds/vpr) is also available to follow historical information (similar to what can be done with the VPA metrics).
 
-In the example below we see the VPR recommendations for CPU Req and for Mem Req/Limit based on the last 7 days of historical usage.
+In the example below, we see the VPR recommendations for CPU Req and for Mem Req/Limit based on the last 7 days of historical usage.
 ![](prometheus.png)
-
 
 You can run the binary in local (to call adhoc along with a prometheus ingress) using ./run.sh or use the DockerFile to build the microservice (to run in a K8S cluster calling the prometheus service).
 
+## How can I override my helm value without losing my existing ones ?
+
+You can simply merge the helm values to only override the ones that need to change.
+To do, so you can use the [python script](mergeDimValues.py) as followed
+```
+./mergeDimValues.py helm-values-origin.yaml helm-values-overriden-from-vpr.yaml helm-values.yaml
+```
