@@ -1,4 +1,4 @@
-# eaa-platform-vpr-exporter
+# vpr-exporter
 Developped by Arnaud Lemaignen
 
 VPR stands for Verical Pod Recommender.
