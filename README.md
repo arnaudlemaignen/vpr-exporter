@@ -17,7 +17,7 @@ For instance on the image below we can see that the memory requests and the aggr
 ![](usage_vs_req.png)
 
 In a nutshell if you have the right requests, Karpenter you will spin exactly the right computes at best cost for you.
-Well this is a definetly a FinOps good practice !
+Well this is definitely a FinOps good practice !
 
 ## What the app does ?
 
