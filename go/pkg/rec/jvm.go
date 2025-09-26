@@ -13,15 +13,15 @@ import (
 
 const (
 	//range
-	queryYoungGenSize       = `sum by(pod,container)(jvm_memory_pool_committed_bytes{pod=~"$podgroup-$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space|ZGC Young Generation"})  / 1048576`
-	queryYoungGenUsage      = `sum by(pod,container)(jvm_memory_pool_used_bytes{pod=~"$podgroup-$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space|ZGC Young Generation"})  / 1048576`
-	queryOldGenUsage        = `sum by(pod,container)(jvm_memory_pool_used_bytes{pod=~"$podgroup-$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}) / 1048576 > 0`
-	queryOldGenUsageAfterGC = `sum by(pod,container)(jvm_memory_used_after_gc_bytes{pod=~"$podgroup-$suffix",key=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}) / 1048576 > 0` +
-		` OR (sum by(pod,container)(min_over_time(jvm_memory_pool_used_bytes{pod=~"$podgroup-$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}[1h]))) / 1048576 > 0`
+	queryYoungGenSize       = `sum by(pod,container)(jvm_memory_pool_committed_bytes{pod=~"$podgroup$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space|ZGC Young Generation"})  / 1048576`
+	queryYoungGenUsage      = `sum by(pod,container)(jvm_memory_pool_used_bytes{pod=~"$podgroup$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space|ZGC Young Generation"})  / 1048576`
+	queryOldGenUsage        = `sum by(pod,container)(jvm_memory_pool_used_bytes{pod=~"$podgroup$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}) / 1048576 > 0`
+	queryOldGenUsageAfterGC = `sum by(pod,container)(jvm_memory_used_after_gc_bytes{pod=~"$podgroup$suffix",key=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}) / 1048576 > 0` +
+		` OR (sum by(pod,container)(min_over_time(jvm_memory_pool_used_bytes{pod=~"$podgroup$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"}[1h]))) / 1048576 > 0`
 	//instant to calculate XMX% = (YoungPool + OldPool) / Limit
 	//ZGC Young Generation is intentionally not included in the query because in Java 24 max(ZGC Old Generation)=max(ZGC Young Generation)
-	queryYoungPool = `max by (container)(sum by (pod,container)(jvm_memory_pool_max_bytes{pod=~"$podgroup-$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space"})) / 1048576  > 0`
-	queryOldPool   = `max by (container)(sum by (pod,container)(jvm_memory_pool_max_bytes{pod=~"$podgroup-$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"})) / 1048576 > 0`
+	queryYoungPool = `max by (container)(sum by (pod,container)(jvm_memory_pool_max_bytes{pod=~"$podgroup$suffix",pool=~"PS Eden Space|G1 Eden Space|PS Survivor Space|G1 Survivor Space|Par Eden Space|Par Survivor Space|young|survivor|Eden Space|Survivor Space"})) / 1048576  > 0`
+	queryOldPool   = `max by (container)(sum by (pod,container)(jvm_memory_pool_max_bytes{pod=~"$podgroup$suffix",pool=~"PS Old Gen|G1 Old Gen|CMS Old Gen|ZHeap|old|Tenured Gen|ZGC Old Generation"})) / 1048576 > 0`
 	//only look at the last 1 day (we dont want to look for the last 7d has it would not be fair)
 	//divide by 5 because the ES query is done every 5 minutes
 	queryAllocationStall = `sum by(by_app)(sum_over_time(es_query_container_java_allocation_stall_by_host_by_app_doc_count{by_host=~"$podgroup-.*"}[1d])/5)`
