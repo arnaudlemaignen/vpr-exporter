@@ -108,12 +108,9 @@ func (r *Recommender) GenRecommendation(podGroup PodGroup, usage map[string]Cont
 			c.JVMYoungGenMinMB = val.YoungGenUsageMB.Min
 			c.JVMYoungGenMaxAfterGCMB = val.YoungGenUsageMB.MaxAfterGC
 			c.JVMYoungGenMaxMB = val.YoungGenUsageMB.Max
-			//Formula agreed with David T.
 			// new Xmx  = Young + max(max Old Gen used after GC/.65, 3*static memory)
 			// new Limit = new Xmx / Xmx%
 			// new Req   = new Limit * 85%
-			// see definitions below
-			// https://osiinc.jira.com/wiki/spaces/EAA/pages/3274375404/Runtime+resource+consumption+model+for+all+java-based+microservices
 			//static memory is the Heap memory containing JVM metadata which is the baseline of the JVM graph (ie the min of the OldGen usage)
 			//transaction memory is the Heap memory that cannot be garbage collected during transactions (ie the max after full GC of the OldGen usage)
 			maxTransactionVsStaticMemory := math.Max(c.JVMOldGenMaxAfterFullGCMB*100.0/r.TargetMemOldGenUsagePercent, r.TargetMemStaticMaxRatio*c.JVMOldGenMinMB)
@@ -122,9 +119,7 @@ func (r *Recommender) GenRecommendation(podGroup PodGroup, usage map[string]Cont
 			//Cons does not work well with Java 24 with ZGC Young Generation which is sometimes = to Xmx and with ElasticSearch which has no Young Generation value
 			// newXmx := c.JVMYoungGenMB + maxTransactionVsStaticMemory
 			//New algo
-			//This is a new algo that will works in most cases and was agreed with David T.
-			//same logic as with OlGen, we will use the max of the OldGen usage after Minor GC at 65% usage
-			newXmx := c.JVMYoungGenMaxAfterGCMB*100.0/r.TargetMemOldGenUsagePercent + maxTransactionVsStaticMemory
+			newXmx := c.JVMYoungGenMaxAfterGCMB + maxTransactionVsStaticMemory
 			newLimit := newXmx * 100.0 / c.JVMXmxPercent
 			//extra protective measure
 			//for Java processes the min Xmx is 512MB, so we will not recommend less than that
